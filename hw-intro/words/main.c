@@ -46,7 +46,24 @@ WordCount *word_counts = NULL;
  */
 int num_words(FILE* infile) {
   int num_words = 0;
-
+  int c;
+  while((c=fgetc(infile))!=EOF){
+    if(isalpha(c)){
+      //printf("%c",tolower(c));
+      for(int i=1;i<MAX_WORD_LEN;i++){
+        if((c=fgetc(infile))==EOF || !isalpha(c))
+          break;
+        /*if((c=fgetc(infile))!=EOF && isalpha(c))
+        {
+          printf("%c",tolower(c));
+        }
+        else
+          break;*/
+      }
+      //printf("\n");
+      num_words++;
+    }
+  }
   return num_words;
 }
 
@@ -57,6 +74,31 @@ int num_words(FILE* infile) {
  * Useful functions: fgetc(), isalpha(), tolower(), add_word().
  */
 void count_words(WordCount **wclist, FILE *infile) {
+  char w[65];
+  int c,j;
+  while((c=fgetc(infile))!=EOF){
+    if(isalpha(c)){
+      //memset(w,0,sizeof(w));
+      j=-1;
+      w[++j]=tolower(c);
+      for(int i=1;i<MAX_WORD_LEN;i++){
+        if((c=fgetc(infile))!=EOF && isalpha(c))
+        {
+          w[++j]=tolower(c);
+        }
+        else
+        {
+          w[++j]='\0';
+          /*printf("%d",j);
+          for(int k=0;k<j;k++){
+            printf("%c ",w[k]);
+          }*/
+          add_word(wclist,w);
+          break;
+        }
+      }
+    }
+  }
 }
 
 /*
@@ -64,7 +106,14 @@ void count_words(WordCount **wclist, FILE *infile) {
  * Useful function: strcmp().
  */
 static bool wordcount_less(const WordCount *wc1, const WordCount *wc2) {
-  return 0;
+  const WordCount *w1=wc1;
+  const WordCount *w2=wc2;
+  if(w1->count!=w2->count){
+    return w1->count-w2->count<0;
+  }
+  else{
+    return strcmp(w1->word,w2->word)<0;
+  }
 }
 
 // In trying times, displays a helpful message.
@@ -94,7 +143,7 @@ int main (int argc, char *argv[]) {
   int i;
   static struct option long_options[] =
   {
-      {"count", no_argument, 0, 'c'},
+      {"count", no_argument, 0, 'c'}, 
       {"frequency", no_argument, 0, 'f'},
       {"help", no_argument, 0, 'h'},
       {0, 0, 0, 0}
@@ -131,14 +180,27 @@ int main (int argc, char *argv[]) {
     // At least one file specified. Useful functions: fopen(), fclose().
     // The first file can be found at argv[optind]. The last file can be
     // found at argv[argc-1].
+    for(int i=optind;i<=argc-1;i++){
+      infile=fopen(argv[i],"r");
+      total_words=total_words+num_words(infile);
+      //count_words(&word_counts,infile);
+      fclose(infile);
+    }
   }
 
   if (count_mode) {
     printf("The total number of words is: %i\n", total_words);
   } else {
+    for(int i=optind;i<=argc-1;i++){
+      infile=fopen(argv[i],"r");
+     // total_words=total_words+num_words(infile);
+      count_words(&word_counts,infile);
+      fclose(infile);
+    }
     wordcount_sort(&word_counts, wordcount_less);
 
     printf("The frequencies of each word are: \n");
+    //printf("%d\n",len_words(word_counts));
     fprint_words(word_counts, stdout);
 }
   return 0;

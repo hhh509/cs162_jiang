@@ -45,6 +45,7 @@ struct word_count {
 
 /* Introduce a type name for the struct */
 typedef struct word_count WordCount;
+typedef struct word_count* Word;
 
 /* Initialize a word count list, updating the reference to the list */
 void init_words(WordCount **wclist);
@@ -59,7 +60,7 @@ WordCount *find_word(WordCount *wchead, char *word);
 void add_word(WordCount **wclist, char *word);
 
 //static int wordcntcmp(const WordCount *wc1, WordCount *wc2);
-
+ 
 /* print word counts to a file */
 void fprint_words(WordCount *wchead, FILE *ofile);
 
