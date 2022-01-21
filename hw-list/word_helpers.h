@@ -1,4 +1,4 @@
-/*
+ /*
  * The word_helpers interface provides functions that are useful to count
  * words in a file and sort the resulting word count list.
  *
