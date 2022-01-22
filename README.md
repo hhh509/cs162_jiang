@@ -1,2 +1,2 @@
-# cs162_jiang
-self-learning(FALL 2021)
+# cs162
+self-learning(fa21)
